@@ -1,5 +1,19 @@
 #!/bin/bash
 backupfolder="/var/backups/automatic/"
+argCount=0
+while getopts ":o:" opts; do
+	case ${opts} in
+		o) if [ ! -d "$OPTARG" ]; then
+				echo ERROR: $OPTARG is not a directory or not existing. Exiting..
+				exit
+		fi
+		((argCount++))
+		backupfolder=${OPTARG};;
+
+	esac
+done
+
+shift $(($argCount * 2))
 folders="$@"
 
 if [ ! -d "$backupfolder" ]; then
