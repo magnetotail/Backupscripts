@@ -16,3 +16,6 @@ datestring => yyyy-MM-dd_hh:mm
 `/var/backups/automatic/`
 ## log location
 `/var/log/autobkp.log`
+
+## Übergabe der Folder Parameter
+an das Skript wird aus der crontab ( nur ) ein folder und ein ausgabe ordner als -o switch übergeben.
