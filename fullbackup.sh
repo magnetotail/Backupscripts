@@ -30,6 +30,6 @@ do
 	bakfilename=$(echo "$f" | sed 's,/,_,g')
 	datestring=$(date +%F_%H:%M)
 
-	tar -zcpf "$backupfolder""$bakfilename"_"$datestring".tgz "$f"
+	tar -zcpf "$backupfolder""f_""$datestring"_"$bakfilename".tgz "$f"
 
 done
