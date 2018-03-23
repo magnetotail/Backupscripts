@@ -1,6 +1,4 @@
 #!/bin/bash
-#TODO
-# Skript schreiben
 backupfolder="/var/backups/automatic/"
 suchmarker="f"
 marker="f"
