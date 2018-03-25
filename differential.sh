@@ -66,14 +66,14 @@ do
 
 	datestring=$(date +%F_%H:%M)
 	
-	absoluteBakFile="$backupfolder$marker"_"$datestring"_"$bakfilenamefolder".tgz
+	absoluteBakFile="$backupfolder$marker"_"$datestring""$bakfilenamefolder".tgz
 
 	echo Saving contents of "$folder" in "$absoluteBakFile"
 	
 	tar -zcpf "$absoluteBakFile" -T tmp.txt
 	
-	directorySizeKByte=$(du -cs "$backupfolder" | grep -o -e "^[0-9]*" | tail -n 1)
-	directorySizeReadable=$(du -hcs "$backupfolder" | egrep -o -e "^[0-9]*(,[0-9]*)?[KMGTPEZY]" | tail -n 1)
+	directorySizeKByte=$(du -cs "$folder" | grep -o -e "^[0-9]*" | tail -n 1)
+	directorySizeReadable=$(du -hcs "$folder" | egrep -o -e "^[0-9]*(,[0-9]*)?[KMGTPEZY]" | tail -n 1)
 	tarSizeKByte=$(du "$absoluteBakFile" | grep -o -e "^[0-9]*")
 	tarSizeReadable=$(du -h "$absoluteBakFile" | egrep -o -e "^[0-9]*(,[0-9]*)?[KMGTPEZY]")
 
