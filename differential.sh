@@ -29,22 +29,50 @@ last_char=${backupfolder:length-1:1}
 shift $(($OPTIND-1))
 folders="$@"
 
-lastbackupfile=$(ls -Art "$backupfolder""$suchmarker"* | tail -n 1)
 
-for f in $folders
+for folder in $folders
 do
-	if [ ! -d "$f" ]; then
-		echo ERROR: "$f" is not a directory or not existing. Skipping...
+	bakfilenamefolder=$(echo "$folder" | sed 's,/,_,g')
+	if [[ "$marker" != "f" ]]; then
+		lastbackupfile=$(ls -Art "$backupfolder""$suchmarker"*"$bakfilenamefolder".tgz | tail -n 1)
+		if [[ ! -f "$lastbackupfile" ]]; then
+			success=false
+			if [[ "$marker" == "i" ]]; then
+				strategy="Incremental"
+				echo "$strategy backup started, but no last backup file with marker $suchmarker found. Searching for last fullbackup."
+				suchmarker="f"
+				lastbackupfile=$(ls -Art "$backupfolder""$suchmarker"*"$bakfilenamefolder".tgz | tail -n 1)
+				if [[ -f "$lastbackupfile" ]]; then
+					success=true
+				fi
+			else
+				strategy="Differential"
+			fi
+			if [[ ! $success ]]; then
+				echo "ERROR: $strategy backup was started, but no file with marker $suchmarker could be found in directory $backupfolder. Exiting!"
+				exit
+			fi
+		fi 
+	fi
+	echo Found last backup file for "$folder": "$lastbackupfile"
+	if [ ! -d "$folder" ]; then
+		echo ERROR: "$folder" is not a directory or not existing. Skipping...
 		continue
 	fi
 
-	find "$f" -type f -newer "$lastbackupfile" > tmp.txt
+	if [[ "$marker" == "f" ]]; then
+		find "$folder" -type f > tmp.txt
+	else
+		find "$folder" -type f -newer "$lastbackupfile" > tmp.txt
+	fi
+	echo found $(cat tmp.txt | wc -l) new files.
 
 	datestring=$(date +%F_%H:%M)
 	
-	bakfilename=$(echo "$f" | sed 's,/,_,g')
+
+	echo Saving contents of "$folder" in "$backupfolder$marker"_"$datestring"_"$bakfilenamefolder".tgz
 	
-	tar -zcpf "$backupfolder""$marker"_"$datestring"_"$bakfilename".tgz -T tmp.txt
+	tar -zcpf "$backupfolder""$marker"_"$datestring"_"$bakfilenamefolder".tgz -T tmp.txt
 	
 	rm tmp.txt
 done
