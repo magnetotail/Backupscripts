@@ -49,8 +49,8 @@ do
 				strategy="Differential"
 			fi
 			if [[ ! $success ]]; then
-				echo "ERROR: $strategy backup was started, but no file with marker $suchmarker could be found in directory $backupfolder. Exiting!"
-				exit
+				echo "ERROR: $strategy backup was started, but no file with marker $suchmarker could be found in directory $backupfolder for folder $folder. Skipping!"
+				continue
 			fi
 		fi 
 	fi
