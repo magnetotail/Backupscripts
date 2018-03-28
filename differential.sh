@@ -1,4 +1,5 @@
 #!/bin/bash
+logfile="/var/log/autobkp.log"
 backupfolder="/var/backups/automatic/"
 suchmarker="f"
 marker="f"
@@ -76,17 +77,19 @@ do
 	absoluteBakFile="$backupfolder$marker"_"$datestring""$bakfilenamefolder".tgz
 
 	echo Saving contents of "$folder" in "$absoluteBakFile"
+	echo Saving contents of "$folder" in "$absoluteBakFile" >> $logfile
 	
 	tar -zcpf "$absoluteBakFile" -T tmp.txt
 	
 	directorySizeKByte=$(du -cs "$folder" | grep -o -e "^[0-9]*" | tail -n 1)
-	directorySizeReadable=$(du -hcs "$folder" | egrep -o -e "^[0-9]*(,[0-9]*)?[KMGTPEZY]" | tail -n 1)
+	directorySizeReadable=$(du -hcs "$folder" | egrep -o -e "^[0-9]*((.|,)[0-9]*)?[KMGTPEZY]" | tail -n 1)
 	tarSizeKByte=$(du "$absoluteBakFile" | grep -o -e "^[0-9]*")
-	tarSizeReadable=$(du -h "$absoluteBakFile" | egrep -o -e "^[0-9]*(,[0-9]*)?[KMGTPEZY]")
+	tarSizeReadable=$(du -h "$absoluteBakFile" | egrep -o -e "^[0-9]*((.|,)[0-9]*)?[KMGTPEZY]")
 
-	compression=$(bc -l <<< "scale=2; ($directorySizeKByte*100)/$tarSizeKByte-100")
+	compression=$(bc -l <<< "scale=2; ($tarSizeKByte*100)/$directorySizeKByte")
 
 	echo Directory size: "$directorySizeReadable". Tar size: "$tarSizeReadable". Compression: "$compression"%
+	echo Directory size: "$directorySizeReadable". Tar size: "$tarSizeReadable". Compression: "$compression"% >> $logfile
 
 	rm tmp.txt
 done
