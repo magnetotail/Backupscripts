@@ -19,3 +19,7 @@ datestring => yyyy-MM-dd_hh:mm
 
 ## Übergabe der Folder Parameter
 an das Skript wird aus der crontab ( nur ) ein folder und ein ausgabe ordner als -o switch übergeben.
+
+# Todos
+## lesen des Backupzeitpunkts aus Dateinamen
+wenn die Datei verschoben wurde ist der Modify Timestamp nicht mehr eindeutig.
