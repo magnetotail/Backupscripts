@@ -7,7 +7,7 @@ argCount=0
 while getopts "o:idf" opts; do
 	case ${opts} in
 		o) if [ ! -d "$OPTARG" ]; then
-				echo ERROR: $OPTARG is not a directory or not existing. Exiting..
+				tee -a $logfile <<<  "[$(date +%F_%H:%M:%S)] ERROR: $OPTARG is not a directory or not existing. Exiting.."
 				exit
 		fi
 		backupfolder=${OPTARG};
@@ -24,9 +24,9 @@ while getopts "o:idf" opts; do
 done
 
 if [ -w $backupfolder ]; then
-	echo Write permissions are present.
+	tee -a $logfile <<<  "[$(date +%F_%H:%M:%S)] Write permissions are present."
 else
-	echo No Write permissions for the target folder. Exiting!
+	tee -a $logfile <<<  "[$(date +%F_%H:%M:%S)] No Write permissions for the target folder. Exiting!"
 	exit
 fi
 
@@ -46,22 +46,22 @@ do
 		if [[ ! -f "$lastbackupfile" ]]; then
 			if [[ "$marker" == "i" ]]; then
 				strategy="Incremental"
-				echo "$strategy backup started, but no last backup file with marker $suchmarker found. Searching for last fullbackup."
+				tee -a $logfile <<<  "[$(date +%F_%H:%M:%S)] $strategy backup started, but no last backup file with marker $suchmarker found. Searching for last fullbackup."
 				suchmarker="f"
 				lastbackupfile=$(ls -Art "$backupfolder""$suchmarker"*"$bakfilenamefolder".tgz | tail -n 1)
 			else
 				strategy="Differential"
 			fi
 			if [[ ! -f "$lastbackupfile" ]]; then
-				echo "ERROR: $strategy backup was started, but no file with marker $suchmarker could be found in directory $backupfolder for folder $folder. Skipping!"
+				tee -a $logfile <<<  "[$(date +%F_%H:%M:%S)] ERROR: $strategy backup was started, but no file with marker $suchmarker could be found in directory $backupfolder for folder $folder. Skipping!"
 				continue
 			else
-				echo Found last backup file for "$folder": "$lastbackupfile"
+				tee -a $logfile <<<  "[$(date +%F_%H:%M:%S)] Found last backup file for $folder: $lastbackupfile"
 			fi
 		fi 
 	fi
 	if [ ! -d "$folder" ]; then
-		echo ERROR: "$folder" is not a directory or not existing. Skipping...
+		tee -a $logfile <<<  "[$(date +%F_%H:%M:%S)] ERROR: $folder is not a directory or not existing. Skipping..."
 		continue
 	fi
 
@@ -70,14 +70,13 @@ do
 	else
 		find "$folder" -type f -newer "$lastbackupfile" > tmp.txt
 	fi
-	echo Found $(cat tmp.txt | wc -l) new files.
+	tee -a $logfile <<< "[$(date +%F_%H:%M:%S)] Found $(cat tmp.txt | wc -l) new files."
 
 	datestring=$(date +%F_%H:%M)
 	
 	absoluteBakFile="$backupfolder$marker"_"$datestring""$bakfilenamefolder".tgz
 
-	echo Saving contents of "$folder" in "$absoluteBakFile"
-	echo Saving contents of "$folder" in "$absoluteBakFile" >> $logfile
+	tee -a $logfile <<< "[$(date +%F_%H:%M:%S)] Saving contents of $folder in $absoluteBakFile"
 	
 	tar -zcpf "$absoluteBakFile" -T tmp.txt
 	
@@ -88,8 +87,7 @@ do
 
 	compression=$(bc -l <<< "scale=2; ($tarSizeKByte*100)/$directorySizeKByte")
 
-	echo Directory size: "$directorySizeReadable". Tar size: "$tarSizeReadable". Compression: "$compression"%
-	echo Directory size: "$directorySizeReadable". Tar size: "$tarSizeReadable". Compression: "$compression"% >> $logfile
+	tee -a $logfile <<< "[$(date +%F_%H:%M:%S)] Directory size: $directorySizeReadable. Tar size: $tarSizeReadable. Compression: $compression%"
 
 	rm tmp.txt
 done
