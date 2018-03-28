@@ -22,6 +22,13 @@ while getopts "o:idf" opts; do
 	esac
 done
 
+if [ -w $backupfolder ]; then
+	echo Write permissions are present.
+else
+	echo No Write permissions for the target folder. Exiting!
+	exit
+fi
+
 length=${#backupfolder}
 last_char=${backupfolder:length-1:1}
 [[ $last_char != "/" ]] && backupfolder="$backupfolder/"; :
