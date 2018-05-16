@@ -4,8 +4,8 @@ backupfolder="/var/backups/automatic/"
 suchmarker="f"
 marker="f"
 argCount=0
-diffCronTabFile="/etc/cron.d/diffhnbkbackup"
-incCronTabFile="/etc/cron.d/inchnbkbackup" 
+CronTabFile="/etc/cron.d/hnbkbackup" 
+backupExecutable="/usr/bin/hnbkbackupscript"
 
 if [ "$EUID" -ne "0" ]
 then
@@ -46,10 +46,18 @@ last_char=${backupfolder:length-1:1}
 shift $(($OPTIND-1))
 folders="$@"
 
-croncommand="30 10 * * 1 root bash /usr/bin/hnbkbackupscript.sh"
-cronparms=" "
+cronparms="-o=${backupfolder} ${folders}"
+basecroncommand="30 10 * * 1 root bash ${backupExecutable}"
+fullcron="${basecroncommand} -f ${cronparms}"
+basecroncommand="35 10 * * * root bash ${backupExecutable}"
+diffinccroncommand="${basecroncommand} -${marker} ${cronparms}"
 
-# copy a file to /etc/cron.d
+echo "${fullcron}" > ${CronTabFile}
+echo "${diffinccroncommand}" >> ${CronTabFile}
 
+tee -a $logfile <<<  "[$(date +%F_%H:%M:%S)] Writing crontab entries."
+
+cp ./hnbkbackupscript.sh $backupExecutable
+chmod +x /usr/bin/hnbkbackupscript
 
 exit
