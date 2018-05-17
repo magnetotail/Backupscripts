@@ -58,3 +58,17 @@ Soll das gesamte Script von der Maschine entfernt werden, müssen sie noch die a
 ```bash
 sudo rm /usr/local/bin/hnbkbackupscript
 ```
+
+## Wiederherstellen
+
+Um das Backup wiedereinzuspielen ist eine manuelle Interaktion des Users nötig.  
+Da die gesicherten Dateien nicht als Delta, sondern als Volltext gespeichert werden, ist das manuelle Entpacken und wieder einfügen per `unzip` oder `tar` simpel.  
+Für das entpacken von entsprechenden Archiven konsultieren sie bitte die man-Pages via
+
+```bash
+man tar
+```
+oder 
+```bash
+man unzip
+```
