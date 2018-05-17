@@ -5,11 +5,11 @@ suchmarker="f"
 marker="f"
 argCount=0
 CronTabFile="/etc/cron.d/hnbkbackup" 
-backupExecutable="/usr/bin/hnbkbackupscript"
+backupExecutable="/usr/local/bin/hnbkbackupscript"
 
 if [ "$EUID" -ne "0" ]
 then
-	echo "Please run as root"
+	echo "Please run as root. Exiting."
 	exit
 fi
 
@@ -58,6 +58,6 @@ echo "${diffinccroncommand}" >> ${CronTabFile}
 tee -a $logfile <<<  "[$(date +%F_%H:%M:%S)] Writing crontab entries."
 
 cp ./hnbkbackupscript.sh $backupExecutable
-chmod +x /usr/bin/hnbkbackupscript
+chmod +x ${backupExecutable}
 
 exit
