@@ -46,7 +46,7 @@ last_char=${backupfolder:length-1:1}
 shift $(($OPTIND-1))
 folders="$@"
 
-cronparms="-o=${backupfolder} ${folders}"
+cronparms="-o ${backupfolder} ${folders}"
 basecroncommand="30 10 * * 1 root bash ${backupExecutable}"
 fullcron="${basecroncommand} -f ${cronparms}"
 basecroncommand="35 10 * * * root bash ${backupExecutable}"
